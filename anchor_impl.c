@@ -52,6 +52,8 @@ static void gpiote_init()
 	in_config.pull = NRF_GPIO_PIN_PULLDOWN;
 	err_code = nrf_drv_gpiote_in_init(DW1000_IRQ, &in_config, gpiote_event_handler);
 	APP_ERROR_CHECK(err_code);
+
+	nrf_drv_gpiote_in_event_enable(DW1000_IRQ, true);
 }
 
 static void user_btn_callback(button_event_t be)
@@ -85,6 +87,8 @@ static void beacon_timer_callback(tick_timer_t tt, void* arg)
 	tick_timer_start(m_beacon_timer, 1000, beacon_timer_callback, NULL);
 }
 
+
+
 void anchor_impl_initialize()
 {
 
@@ -106,7 +110,7 @@ void anchor_impl_start() {
 	led_blinker_blink(&m_blue_led, 500);
 
 	deca_phy_init();
-	mac_init(0x8001);
+	mac_init(0x8001, NULL);
 
 	m_beacon_timer = tick_timer_create();
 	tick_timer_start(m_beacon_timer, 1000, beacon_timer_callback, NULL);

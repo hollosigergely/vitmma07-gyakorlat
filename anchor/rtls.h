@@ -11,7 +11,7 @@
 #include "commons.h"
 #include "assert.h"
 
-#define RTLS_BUFFER_SIZE    sizeof(rtls_tdoa_aggr_msg_t)
+#define RTLS_BUFFER_SIZE    128
 
 typedef uint8_t rtls_res_t;
 #define RTLS_OK             0

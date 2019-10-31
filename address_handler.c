@@ -1,7 +1,7 @@
 #include "address_handler.h"
 #include <nrf.h>
 
-uint16_t getAddress()
+uint16_t addr_handler_get()
 {
 	uint64_t deviceID = NRF_FICR->DEVICEID[1];
 	deviceID = (deviceID << 32) & 0xFFFFFFFF00000000;

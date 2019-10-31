@@ -31,10 +31,12 @@ typedef struct {
 } __packed mac_beacon_package_format_t;
 
 
-void		mac_init(uint16_t addr);
+typedef void (*mac_package_rx_callback_t)(mac_general_package_format_t* pkg, int length, uint64_t rx_timestamp);
+
+void		mac_init(uint16_t addr, mac_package_rx_callback_t callback);
 uint8_t		mac_generate_seq_id();
 
-int			mac_transmit(mac_general_package_format_t* pkg, int length);
+int			mac_transmit(void* pkg, int length);
 void		mac_transmit_beacon();
 
 #endif

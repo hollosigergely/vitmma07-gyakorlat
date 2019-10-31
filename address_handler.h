@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-uint16_t getAddress();
+uint16_t addr_handler_get();
 bool isAnchor(uint16_t address);
 
 

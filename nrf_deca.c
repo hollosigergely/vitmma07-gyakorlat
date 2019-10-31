@@ -37,8 +37,8 @@ static dwt_config_t config_long = {
         DWT_PRF_64M,     // Pulse repetition frequency.
         DWT_PLEN_4096,    // Preamble length.
         DWT_PAC64,        // Preamble acquisition chunk size. Used in RX only.
-		18,               // TX preamble code. Used in TX only. (18->local, 19->wtp)
-		18,               // RX preamble code. Used in RX only. (18->local, 19->wtp)
+		19,               // TX preamble code. Used in TX only. (18->local, 19->wtp)
+		19,               // RX preamble code. Used in RX only. (18->local, 19->wtp)
         1,               // Use non-standard SFD (Boolean)
         DWT_BR_850K,      // Data rate.
         DWT_PHRMODE_EXT, // PHY header mode.

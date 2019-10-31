@@ -27,6 +27,7 @@
 #include "led_blinker.h"
 #include "button.h"
 #include "anchor_impl.h"
+#include "tag_impl.h"
 
 #define TAG "main"
 //  debugging with gdb: ./JLinkGDBServer -if SWD -device nRF51822
@@ -49,8 +50,10 @@ int main(void)
 
 	nrf_delay_ms(50);
 
-	anchor_impl_initialize();
-	anchor_impl_start();
+	//anchor_impl_initialize();
+	//anchor_impl_start();
+
+	tag_impl_start();
 }
 
 
