@@ -49,6 +49,12 @@ typedef struct
 typedef struct
 {
     mac_general_package_format_t    mac_hdr;
+
+	// Misc
+	uint64_t						_poll_rx_ts_64;
+	uint64_t						_resp_tx_ts_64;
+	// !Misc
+
     uint32_t                        treply1;
     uint32_t                        poll_tx_ts;
     uint32_t                        resp_tx_ts;
@@ -68,6 +74,10 @@ typedef struct
 typedef struct
 {
 	mac_general_package_format_t    mac_hdr;
+
+	// Misc
+	uint64_t						_final_rx_ts_64;
+	// !Misc
 
 	uint16_t						dist_cm;
 	uint8_t                         tr_id;

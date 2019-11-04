@@ -55,6 +55,8 @@ static void mac_rxok_callback_impl(const dwt_cb_data_t *data)
 	if(data->datalength - 2 < sizeof(mac_general_package_format_t))
 	{
 		LOGE(TAG, "small package, drop\n");
+
+		dwt_rxenable(0);
 		return;
 	}
 
@@ -66,6 +68,8 @@ static void mac_rxok_callback_impl(const dwt_cb_data_t *data)
 			pkg->dst_addr != m_mac_addr)
 	{
 		LOGT(TAG, "Wrong address, drop\n");
+
+		dwt_rxenable(0);
 		return;
 	}
 

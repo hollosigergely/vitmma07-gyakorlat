@@ -95,6 +95,9 @@ static rtls_res_t handle_poll_msg(rtls_struct_t* rtls)
     resp->poll_tx_ts = (uint32_t)poll->poll_tx_ts;
     resp->resp_tx_ts = (uint32_t)(resp_tx_ts);
 
+	resp->_poll_rx_ts_64 = poll_rx_ts;
+	resp->_resp_tx_ts_64 = resp_tx_ts;
+
     rtls->tx_ts_32 = resp_tx_ts_32;
     rtls->tx_ts = resp_tx_ts;
     rtls->out_length = sizeof(rtls_resp_msg_t);
@@ -144,7 +147,7 @@ static rtls_res_t handle_final_msg(rtls_struct_t* rtls)
     rtls_final_msg_t* final = (rtls_final_msg_t*)rtls->msg;
 	rtls_dist_msg_t* dist = (rtls_dist_msg_t*)rtls->out;
 
-	LOGI(TAG,"t: %d %d %d %d\n", final->treply1, final->treply2, final->tround1, (uint32_t)(final_rx_ts - final->resp_tx_ts));
+	//LOGI(TAG,"t: %d %d %d %d\n", final->treply1, final->treply2, final->tround1, (uint32_t)(final_rx_ts - final->resp_tx_ts));
     uint16_t dist_cm = rtls_calculate_distance(final->treply1, final->treply2, final->tround1, (uint32_t)final_rx_ts - final->resp_tx_ts);
 
 	dist->mac_hdr.fctrl = MAC_FRAME_TYPE_RANGING_DIST;
@@ -153,6 +156,8 @@ static rtls_res_t handle_final_msg(rtls_struct_t* rtls)
     dist->mac_hdr.dst_addr = final->mac_hdr.src_addr;
     dist->tr_id = final->tr_id;
 	dist->dist_cm = dist_cm;
+
+	dist->_final_rx_ts_64 = final_rx_ts;
 
     rtls->out_length = sizeof(rtls_dist_msg_t);
     rtls->tx_ts = 0;

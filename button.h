@@ -14,5 +14,6 @@ typedef void (*button_callback_t)(button_event_t be);
 void button_init(button_callback_t btn_callback);
 void button_down_event();
 bool button_tick();
+bool button_read_user_button();
 
 #endif // BUTTON_H

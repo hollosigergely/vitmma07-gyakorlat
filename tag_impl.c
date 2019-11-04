@@ -34,52 +34,6 @@ static uint8_t			m_rtls_buffer[RTLS_BUFFER_SIZE];
 static tick_timer_t		m_poll_timer;
 static int				m_poll_anchor_index = 0;
 
-static void gpiote_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
-{
-	if(pin == DW1000_IRQ)
-	{
-		LOGT(TAG,"DW1000 IRQ\n");
-		struct event e = { ET_DW1000_IRQ };
-		event_add(e);
-	}
-}
-
-static void gpiote_init()
-{
-	ret_code_t err_code;
-
-	err_code = nrf_drv_gpiote_init();
-	APP_ERROR_CHECK(err_code);
-
-	nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_LOTOHI(true);
-	in_config.pull = NRF_GPIO_PIN_PULLDOWN;
-	err_code = nrf_drv_gpiote_in_init(DW1000_IRQ, &in_config, gpiote_event_handler);
-	APP_ERROR_CHECK(err_code);
-
-	nrf_drv_gpiote_in_event_enable(DW1000_IRQ, true);
-}
-
-static void user_btn_callback(button_event_t be)
-{
-	switch(be)
-	{
-	case BUTTON_EVENT_DOWN:
-		break;
-	case BUTTON_EVENT_UP:
-		//tick_timer_start(m_push_button_timer, 3000, tick_timer_callback, NULL);
-		break;
-	case BUTTON_EVENT_UP_LONG:
-		/*if(m_tag_running_state == TAG_RUNNING_STATE_OFF)
-		{
-			set_tag_state(TAG_RUNNING_STATE_RUNNING);
-		}
-		else if(m_tag_running_state == TAG_RUNNING_STATE_RUNNING)
-		{
-			set_tag_state(TAG_RUNNING_STATE_GOING_OFF);
-		}*/
-		break;
-	}
-}
 
 static void mac_package_rx_callback(mac_general_package_format_t* pkg, int length, uint64_t rx_timestamp)
 {
@@ -98,12 +52,14 @@ static void mac_package_rx_callback(mac_general_package_format_t* pkg, int lengt
 		{
 			rtls_dist_msg_t* msg = (rtls_dist_msg_t*)pkg;
 			LOGI(TAG,"distance: %d\n", msg->dist_cm);
+
+			LOGTS(msg->mac_hdr.src_addr, msg->tr_id, 5, msg->_final_rx_ts_64);
 		}
-		else
+		else if(pkg->fctrl == MAC_FRAME_TYPE_RANGING_RESP)
 		{
 			rtls_struct_t rtls;
 			rtls.rx_ts = rx_timestamp;
-			rtls.msg = pkg;
+			rtls.msg = (uint8_t*)pkg;
 			rtls.length = length;
 			rtls.out = m_rtls_buffer;
 
@@ -116,6 +72,12 @@ static void mac_package_rx_callback(mac_general_package_format_t* pkg, int lengt
 			{
 				LOGE(TAG,"RX, RTLS packet process failed: %02X\n", ret);
 			}
+
+			rtls_resp_msg_t* msg = (rtls_resp_msg_t*)pkg;
+			LOGTS(msg->mac_hdr.src_addr, msg->tr_id, 1, msg->_poll_rx_ts_64);
+			LOGTS(msg->mac_hdr.src_addr, msg->tr_id, 2, msg->_resp_tx_ts_64);
+			LOGTS(msg->mac_hdr.src_addr, msg->tr_id, 3, rx_timestamp);
+			LOGTS(msg->mac_hdr.src_addr, msg->tr_id, 4, rtls.tx_ts);
 		}
 	}
 }
@@ -132,6 +94,9 @@ static void poll_timer_callback(tick_timer_t tt, void* arg)
 		rtls_compose_poll_msg(anchor_id,&rtls);
 		mac_transmit_delayed(rtls.out, rtls.out_length,rtls.tx_ts_32);
 
+		rtls_poll_msg_t* msg = (rtls_poll_msg_t*)rtls.out;
+		LOGTS(anchor_id, msg->tr_id, 0, msg->poll_tx_ts);
+
 		m_poll_anchor_index++;
 		if(m_poll_anchor_index >= anchor_db_get_size())
 			m_poll_anchor_index = 0;
@@ -143,19 +108,10 @@ static void poll_timer_callback(tick_timer_t tt, void* arg)
 void tag_impl_start() {
 	LOGI(TAG, "Starting in tag mode\n");
 
-	NRF_CLOCK->EVENTS_HFCLKSTARTED = 0;
-	NRF_CLOCK->TASKS_HFCLKSTART = 1;
-
-	event_init();
-
 	led_blinker_init(&m_red_led, RED1_LED_PIN);
 	led_blinker_init(&m_blue_led, BLUE_LED_PIN);
 
-	gpiote_init();
-	button_init(user_btn_callback);
-
-	led_blinker_blink(&m_red_led, 500);
-	led_blinker_blink(&m_blue_led, 500);
+	led_blinker_blink(&m_blue_led, 1000);
 
 	anchor_db_init();
 	rtls_init(addr_handler_get());

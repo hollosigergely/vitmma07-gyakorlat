@@ -124,3 +124,9 @@ void button_down_event()
 	tick_timer_start(m_timer, BUTTON_CHECK_INTERVAL_MS, tick_timer_callback, NULL);
 }
 
+
+bool button_read_user_button()
+{
+	return nrf_gpio_pin_read(USER_BUTTON_PIN);
+}
+
