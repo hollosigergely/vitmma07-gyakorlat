@@ -19,12 +19,16 @@ typedef uint8_t rtls_res_t;
 #define RTLS_WRONG_MSG      2
 #define RTLS_UNKNOW_SUBTYPE 3
 #define RTLS_IN_PROGRESS    4
+#define RTLS_SIZE_INCORRECT 5
 
 typedef struct
 {
+	// Input
     uint64_t        rx_ts;
     uint8_t*        msg;
     uint16_t        length;
+
+	// Output
     uint8_t*        out;
     uint16_t        out_length;
     uint32_t        tx_ts_32;
@@ -61,11 +65,17 @@ typedef struct
     uint8_t                         tr_id;
 } __packed rtls_final_msg_t;
 
+typedef struct
+{
+	mac_general_package_format_t    mac_hdr;
 
+	uint16_t						dist_cm;
+	uint8_t                         tr_id;
+} __packed rtls_dist_msg_t;
 
 void        rtls_init(uint16_t addr);
 
-rtls_res_t  rtls_handle_message(rtls_struct_t* rtls);
+rtls_res_t  rtls_handle_message(rtls_struct_t* rtls, uint8_t fctrl);
 rtls_res_t  rtls_compose_poll_msg(uint16_t addr, rtls_struct_t* rtls);
 
 uint16_t    rtls_calculate_distance(uint32_t Treply1, uint32_t Treply2, uint32_t Tround1, uint32_t Tround2);

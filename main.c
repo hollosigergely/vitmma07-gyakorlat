@@ -50,9 +50,7 @@ int main(void)
 
 	nrf_delay_ms(50);
 
-	//anchor_impl_initialize();
 	//anchor_impl_start();
-
 	tag_impl_start();
 }
 

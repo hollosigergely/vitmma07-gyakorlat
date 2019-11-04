@@ -30,6 +30,7 @@
 #define BLUE_LED_PIN	31
 static led_blinker_t m_red_led, m_blue_led;
 static tick_timer_t m_beacon_timer;
+static uint8_t			m_rtls_buffer[RTLS_BUFFER_SIZE];
 
 static void gpiote_event_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
@@ -88,10 +89,28 @@ static void beacon_timer_callback(tick_timer_t tt, void* arg)
 }
 
 
-
-void anchor_impl_initialize()
+static void mac_package_rx_callback(mac_general_package_format_t* pkg, int length, uint64_t rx_timestamp)
 {
+	LOGI(TAG, "rx msg (fctl: %02X, seq: %02X, S: %04X, D: %04X, size: %d)\n", pkg->fctrl, pkg->seqid, pkg->src_addr, pkg->dst_addr, length);
 
+	if((pkg->fctrl & 0xF0) == MAC_FRAME_TYPE_RANGING)
+	{
+		rtls_struct_t rtls;
+		rtls.rx_ts = rx_timestamp;
+		rtls.msg = pkg;
+		rtls.length = length;
+		rtls.out = m_rtls_buffer;
+
+		rtls_res_t ret = rtls_handle_message(&rtls, pkg->fctrl);
+		if(ret == RTLS_OK)
+		{
+			mac_transmit_delayed(rtls.out, rtls.out_length, rtls.tx_ts_32);
+		}
+		else
+		{
+			LOGE(TAG,"RX, RTLS packet process failed: %02X", ret);
+		}
+	}
 }
 
 void anchor_impl_start() {
@@ -109,8 +128,10 @@ void anchor_impl_start() {
 	led_blinker_blink(&m_red_led, 500);
 	led_blinker_blink(&m_blue_led, 500);
 
+	rtls_init(addr_handler_get());
+
 	deca_phy_init();
-	mac_init(0x8001, NULL);
+	mac_init(addr_handler_get(), mac_package_rx_callback);
 
 	m_beacon_timer = tick_timer_create();
 	tick_timer_start(m_beacon_timer, 1000, beacon_timer_callback, NULL);

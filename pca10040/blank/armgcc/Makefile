@@ -21,6 +21,7 @@ SRC_FILES += \
   $(PROJ_DIR)/address_handler.c \
   $(PROJ_DIR)/log.c \
   $(PROJ_DIR)/nrf_deca.c \
+  $(PROJ_DIR)/anchor_db.c \
   $(PROJ_DIR)/decadriver/deca_device.c \
   $(PROJ_DIR)/decadriver/deca_params_init.c \
   $(PROJ_DIR)/anchor/rtls.c \

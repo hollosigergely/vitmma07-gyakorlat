@@ -62,7 +62,7 @@ static void mac_rxok_callback_impl(const dwt_cb_data_t *data)
 	uint64_t rxts = dwm1000_get_rx_timestamp_u64();
 
 	mac_general_package_format_t* pkg = (mac_general_package_format_t*)m_buffer;
-	if(pkg->dst_addr != 0xFFFF ||
+	if(pkg->dst_addr != 0xFFFF &&
 			pkg->dst_addr != m_mac_addr)
 	{
 		LOGT(TAG, "Wrong address, drop\n");
@@ -91,6 +91,21 @@ int mac_transmit(void* pkg, int length)
 	dwt_writetxfctrl(length + 2, 0, 1);   // add CRC
 
 	dwt_starttx(DWT_START_TX_IMMEDIATE);
+
+	return 0;
+}
+
+int mac_transmit_delayed(void* pkg, int length, uint32_t txts32)
+{
+	if(txts32 == 0)
+		return mac_transmit(pkg,length);
+
+	dwt_forcetrxoff();
+	dwt_writetxdata(length + 2, (uint8_t*)pkg, 0);
+	dwt_writetxfctrl(length + 2, 0, 1);   // add CRC
+
+	dwt_setdelayedtrxtime(txts32);
+	dwt_starttx(DWT_START_TX_DELAYED);
 
 	return 0;
 }

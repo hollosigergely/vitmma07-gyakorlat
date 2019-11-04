@@ -51,9 +51,9 @@ static uint16_t     _user_addr;
 void rtls_init(uint16_t addr)
 {
     _user_addr = addr;
-    LOGD(TAG,"RTLS: initialize (address: %04X)", addr);
+	LOGI(TAG,"RTLS: initialize (address: %04X)\n", addr);
 
-    LOGD(TAG,"RTLS maximum message size: %d",sizeof(rtls_final_msg_t));
+	LOGI(TAG,"RTLS msg size: %d, %d, %d\n",sizeof(rtls_poll_msg_t),sizeof(rtls_resp_msg_t),sizeof(rtls_final_msg_t));
 }
 
 
@@ -76,7 +76,7 @@ uint16_t rtls_calculate_distance(uint32_t Treply1, uint32_t Treply2, uint32_t Tr
 static rtls_res_t handle_poll_msg(rtls_struct_t* rtls)
 {
     if(rtls->length != sizeof(rtls_poll_msg_t))
-        return RTLS_WRONG_MSG;
+		return RTLS_SIZE_INCORRECT;
 
     uint64_t poll_rx_ts = rtls->rx_ts;
     uint32_t resp_tx_ts_32 = (poll_rx_ts + (POLL_RX_TO_RESP_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
@@ -86,7 +86,7 @@ static rtls_res_t handle_poll_msg(rtls_struct_t* rtls)
     rtls_resp_msg_t*    resp = (rtls_resp_msg_t*)rtls->out;
 
     resp->mac_hdr.fctrl = MAC_FRAME_TYPE_RANGING_RESP;
-    resp->mac_hdr.seqid = mac_next_seq_id();
+	resp->mac_hdr.seqid = mac_generate_seq_id();
     resp->mac_hdr.src_addr = _user_addr;
     resp->mac_hdr.dst_addr = poll->mac_hdr.src_addr;
     resp->tr_id = poll->tr_id;
@@ -105,7 +105,7 @@ static rtls_res_t handle_poll_msg(rtls_struct_t* rtls)
 static rtls_res_t handle_resp_msg(rtls_struct_t* rtls)
 {
     if(rtls->length != sizeof(rtls_resp_msg_t))
-        return RTLS_WRONG_MSG;
+		return RTLS_SIZE_INCORRECT;
 
     rtls_resp_msg_t* resp = (rtls_resp_msg_t*)rtls->msg;
     rtls_final_msg_t* final = (rtls_final_msg_t*)rtls->out;
@@ -117,7 +117,7 @@ static rtls_res_t handle_resp_msg(rtls_struct_t* rtls)
     uint64_t final_tx_ts = (((uint64_t)(final_tx_ts_32 & 0xFFFFFFFEUL)) << 8);
 
     final->mac_hdr.fctrl = MAC_FRAME_TYPE_RANGING_FINAL;
-    final->mac_hdr.seqid = mac_next_seq_id();
+	final->mac_hdr.seqid = mac_generate_seq_id();
     final->mac_hdr.src_addr = _user_addr;
     final->mac_hdr.dst_addr = resp->mac_hdr.src_addr;
     final->tr_id = resp->tr_id;
@@ -137,38 +137,29 @@ static rtls_res_t handle_resp_msg(rtls_struct_t* rtls)
 static rtls_res_t handle_final_msg(rtls_struct_t* rtls)
 {
     if(rtls->length != sizeof(rtls_final_msg_t))
-        return RTLS_WRONG_MSG;
+		return RTLS_SIZE_INCORRECT;
 
-/*
     uint64_t    final_rx_ts = rtls->rx_ts;
 
     rtls_final_msg_t* final = (rtls_final_msg_t*)rtls->msg;
-    //rtls_dist_msg_t* dist = (rtls_dist_msg_t*)rtls->out;
+	rtls_dist_msg_t* dist = (rtls_dist_msg_t*)rtls->out;
 
+	LOGI(TAG,"t: %d %d %d %d\n", final->treply1, final->treply2, final->tround1, (uint32_t)(final_rx_ts - final->resp_tx_ts));
     uint16_t dist_cm = rtls_calculate_distance(final->treply1, final->treply2, final->tround1, (uint32_t)final_rx_ts - final->resp_tx_ts);
-    UNUSED_VARIABLE(dist_cm);
-*/
 
-/*
-    dist->mac_hdr.fctrl = MAC_FRAME_TYPE_RANGING | MAC_FRAME_ST_DIST;
-    dist->mac_hdr.seqid = mac_next_seq_id();
+	dist->mac_hdr.fctrl = MAC_FRAME_TYPE_RANGING_DIST;
+	dist->mac_hdr.seqid = mac_generate_seq_id();
     dist->mac_hdr.src_addr = _user_addr;
     dist->mac_hdr.dst_addr = final->mac_hdr.src_addr;
     dist->tr_id = final->tr_id;
-    dist->dist_cm = dist_cm;
-
-    // Fill RX quality information
-    rtls_get_rx_quality_information(&rx_quality);
-    dist->rx_quality.rx_max_noise = max(final->rx_quality.rx_max_noise,rx_quality.rx_noise);
-    dist->rx_quality.rx_min_fpampl2 = min(final->rx_quality.rx_min_fpampl2,rx_quality.rx_fpampl2);
-    dist->rx_quality.rx_nlos_count = final->rx_quality.rx_nlos_count + (rx_quality.rx_flag & RX_QUALITY_FLAG_NLOS);
+	dist->dist_cm = dist_cm;
 
     rtls->out_length = sizeof(rtls_dist_msg_t);
     rtls->tx_ts = 0;
     rtls->tx_ts_32 = 0;
 
-    LOGD(TAG,"Sending distance: %" PRIu16, dist_cm);
-*/
+	LOGI(TAG,"Sending distance: %" PRIu16 "\n", dist_cm);
+
     return RTLS_OK;
 }
 
@@ -179,7 +170,7 @@ rtls_res_t rtls_compose_poll_msg(uint16_t addr, rtls_struct_t *rtls)
 
     rtls_poll_msg_t* poll = (rtls_poll_msg_t*)rtls->out;
     poll->mac_hdr.fctrl = MAC_FRAME_TYPE_RANGING_POLL;
-    poll->mac_hdr.seqid = mac_next_seq_id();
+	poll->mac_hdr.seqid = mac_generate_seq_id();
     poll->mac_hdr.src_addr = _user_addr;
     poll->mac_hdr.dst_addr = addr;
     poll->poll_tx_ts = poll_tx_ts;
@@ -192,12 +183,12 @@ rtls_res_t rtls_compose_poll_msg(uint16_t addr, rtls_struct_t *rtls)
     return RTLS_OK;
 }
 
-rtls_res_t rtls_handle_message(rtls_struct_t* rtls)
+rtls_res_t rtls_handle_message(rtls_struct_t* rtls, uint8_t fctrl)
 {
     if(rtls->length < 6)
         return RTLS_WRONG_MSG;
 
-    uint8_t subtype = rtls->msg[0] & 0xF0;
+	uint8_t subtype = fctrl;
 
     if(subtype == MAC_FRAME_TYPE_RANGING_POLL)
     {

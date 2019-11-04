@@ -45,6 +45,7 @@ set(SRCS
       ${PROJECT_SOURCE_DIR}/decadriver/deca_params_init.c
       ${PROJECT_SOURCE_DIR}/anchor/rtls.c
       ${PROJECT_SOURCE_DIR}/anchor/comm_mac.c
+      ${PROJECT_SOURCE_DIR}/anchor_db.c
       ${SDK_ROOT}/components/libraries/timer/app_timer.c
       ${SDK_ROOT}/components/boards/boards.c
       ${SDK_ROOT}/components/libraries/util/app_error.c
