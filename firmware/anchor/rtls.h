@@ -43,7 +43,7 @@ typedef struct
 {
     mac_general_package_format_t    mac_hdr;
     uint64_t                        poll_tx_ts;
-    uint8_t                         tr_id;
+	uint16_t                         tr_id;
 } __packed rtls_poll_msg_t;
 
 typedef struct
@@ -58,7 +58,7 @@ typedef struct
     uint32_t                        treply1;
     uint32_t                        poll_tx_ts;
     uint32_t                        resp_tx_ts;
-    uint8_t                         tr_id;
+	uint16_t                         tr_id;
 } __packed rtls_resp_msg_t;
 
 typedef struct
@@ -68,7 +68,7 @@ typedef struct
     uint32_t                        treply2;
     uint32_t                        tround1;
     uint32_t                        resp_tx_ts;
-    uint8_t                         tr_id;
+	uint16_t                         tr_id;
 } __packed rtls_final_msg_t;
 
 typedef struct
@@ -80,7 +80,7 @@ typedef struct
 	// !Misc
 
 	uint16_t						dist_cm;
-	uint8_t                         tr_id;
+	uint16_t                         tr_id;
 } __packed rtls_dist_msg_t;
 
 void        rtls_init(uint16_t addr);

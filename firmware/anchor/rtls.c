@@ -42,7 +42,7 @@ static inline uint16_t max(uint16_t a, uint16_t b)
 #define UUS_TO_DWT_TIME					65536ll
 
 static uint16_t     _user_addr;
-
+static uint16_t		m_tr_id;
 
 /**
  * @brief Távolságmérés inicializálása
@@ -51,6 +51,7 @@ static uint16_t     _user_addr;
 void rtls_init(uint16_t addr)
 {
     _user_addr = addr;
+	m_tr_id = 0;
 	LOGI(TAG,"RTLS: initialize (address: %04X)\n", addr);
 
 	LOGI(TAG,"RTLS msg size: %d, %d, %d\n",sizeof(rtls_poll_msg_t),sizeof(rtls_resp_msg_t),sizeof(rtls_final_msg_t));
@@ -179,7 +180,7 @@ rtls_res_t rtls_compose_poll_msg(uint16_t addr, rtls_struct_t *rtls)
     poll->mac_hdr.src_addr = _user_addr;
     poll->mac_hdr.dst_addr = addr;
     poll->poll_tx_ts = poll_tx_ts;
-    poll->tr_id = poll->mac_hdr.seqid;
+	poll->tr_id = m_tr_id++;
 
     rtls->tx_ts = poll_tx_ts;
     rtls->tx_ts_32 = poll_tx_ts_32;
