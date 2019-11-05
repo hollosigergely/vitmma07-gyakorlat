@@ -18,10 +18,22 @@ function process()
     title('Frequecy error of C0DE');
     
     figure;
+    subplot(2,1,1);
+    plot_ss_twr_distance(data1);
+    title('SS TWR distance of BABA');
+    
+    subplot(2,1,2);
     plot_ss_twr_distance(data2);
+    title('SS TWR distance of C0DE');
     
     figure;
+    subplot(2,1,1);
+    plot_ads_twr_distance(data1);
+    title('ADS TWR distance of BABA');
+    
+    subplot(2,1,2);
     plot_ads_twr_distance(data2);
+    title('ADS TWR distance of C0DE');
 end
 
 function out=cdiff(in1,in2)
@@ -52,6 +64,7 @@ function dists = plot_ss_twr_distance(data)
    TOF = (Tr-Td)/2*CNT_TO_SEC;
    plot(TOF*SOL);
    ylabel('distance (m)');
+   grid;
 end
 
 function dist = plot_ads_twr_distance(data)
@@ -67,4 +80,5 @@ function dist = plot_ads_twr_distance(data)
    dist = SOL * TOF;
    plot(dist);
    ylabel('distance (m)');
+   grid;
 end
