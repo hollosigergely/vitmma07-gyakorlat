@@ -1,9 +1,8 @@
+1;
+
 function process()
-    clear all;
-    close all;
-    
-    data1 = load_meas('/home/hollosi/tmp/meas','BABA');
-    data2 = load_meas('/home/hollosi/tmp/meas','C0DE');
+    data1 = load_meas('/home/hollosi/meas','0001');
+    data2 = load_meas('/home/hollosi/meas','0002');
 
     data1 = data1(:,2:end);
     data2 = data2(:,2:end);
