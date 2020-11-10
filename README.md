@@ -38,3 +38,4 @@ A feldolgozó szoftver Octave-ban készült, ugyanakkor MATLAB-ban is futtathat�
 - 0000: tag
 - 0001: anchor (a tagtől 530 cm-re)
 - 0002: anchor (a tagtől 234 cm-re)
+A két anchor 704 cm-re van egymástól.
