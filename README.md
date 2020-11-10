@@ -32,3 +32,9 @@ Az eszközök címét a user memóriába írhatjuk:
 nrfjprog -f nrf52 --eraseuicr
 nrfjprog -f nrf52 --memwr 0x10001080 --val 0x<addr>
 ```
+
+## Feldolgozó szoftver
+A feldolgozó szoftver Octave-ban készült, ugyanakkor MATLAB-ban is futtatható. A példa mérésben három eszköz szerepel:
+- 0000: tag
+- 0001: anchor (a tagtől 530 cm-re)
+- 0002: anchor (a tagtől 234 cm-re)

@@ -9,6 +9,15 @@ function process()
 
     figure;
     subplot(2,1,1);
+    plot_tx(data1);
+    title('TX of BABA');
+    
+    subplot(2,1,2);
+    plot_tx(data2);
+    title('TX of C0DE');
+    
+    figure;
+    subplot(2,1,1);
     plot_freq_error(data1);
     title('Frequecy error of BABA');
     
@@ -40,6 +49,16 @@ function out=cdiff(in1,in2)
   idx = find(d < 0);
   d(idx) = d(idx)+2^40;
   out = d;
+end
+
+function plot_tx(data)
+    CNT_TO_SEC=1/(499.2e6*128);
+    
+    ddata = cdiff(data(2:end,:),data(1:end-1,:));
+    ddata = ddata * CNT_TO_SEC;
+
+    plot(ddata(:,1));
+    grid;
 end
 
 function plot_freq_error(data)
