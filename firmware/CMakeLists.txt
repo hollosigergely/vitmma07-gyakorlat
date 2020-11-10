@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 2.8)
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(CMAKE_SYSTEM_PROCESSOR arm)
 
-set(SDK_ROOT "/home/hollosi/huge/toolchain/nRF5/nRF5_SDK_15.0.0_a53641a/")
-SET(CMAKE_C_COMPILER   /home/hollosi/huge/toolchain/nRF5/root/bin/arm-none-eabi-gcc)
-SET(CMAKE_ASM_COMPILER /home/hollosi/huge/toolchain/nRF5/root/bin/arm-none-eabi-gcc)
+set(SDK_ROOT "/storage/toolchain/nRF5/nRF5_SDK_15.0.0_a53641a/")
+SET(CMAKE_C_COMPILER   /storage/toolchain/nRF5/root/bin/arm-none-eabi-gcc)
+SET(CMAKE_ASM_COMPILER /storage/toolchain/nRF5/root/bin/arm-none-eabi-gcc)
 
 
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
@@ -21,7 +21,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} \
     -DNRF52_PAN_74 \
     -mcpu=cortex-m4 \
     -mthumb -mabi=aapcs \
-    -Wall -Werror \
+    -Wall  \
     -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
     -ffunction-sections -fdata-sections -fno-strict-aliasing \
     -fno-builtin -fshort-enums")
@@ -77,7 +77,6 @@ set(SRCS
       ${SDK_ROOT}/components/libraries/balloc/nrf_balloc.c
       ${SDK_ROOT}/modules/nrfx/drivers/src/nrfx_saadc.c
       ${SDK_ROOT}/components/libraries/scheduler/app_scheduler.c
-      ${SDK_ROOT}/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c
 )
 
 add_executable(${PROJECT_NAME}  ${SRCS})
@@ -122,3 +121,13 @@ include_directories(
 
 )
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.hex)
+
+add_custom_target(flash
+    COMMAND nrfjprog -f nrf52 --program ${PROJECT_NAME}.hex --sectorerase
+    DEPENDS ${PROJECT_NAME})
+
+add_custom_target(gdbs
+   COMMENT "Use 'netcat localhost 19021'"
+   COMMAND JLinkGDBServer -if SWD -device nRF52)

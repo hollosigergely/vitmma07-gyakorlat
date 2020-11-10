@@ -9,7 +9,7 @@
 	  SEGGER_RTT_WriteString(0, _out); \
 	}
 
-//#define ENABLE_LOG
+#define ENABLE_LOG
 #ifdef ENABLE_LOG
 #define LOGE(tag,msg,...) { \
       char _out[256]; \
