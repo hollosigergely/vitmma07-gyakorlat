@@ -4,7 +4,7 @@
 #include <WiFiAP.h>
 
 
-#define AP_SSID	"VITMMA07_1"
+#define AP_SSID	"VITMMA07_4"
 #define AP_PASS "Password"
 
 
