@@ -1,0 +1,45 @@
+\section{Kalman-szűrő}
+A lineáris Kalman-szűrő az alábbi állapotegyenlettel dolgozik:
+\begin{center}
+	\begin{tabular}{lll}
+		$x_k=A_{k-1}x_{k-1}+q_{k-1}$ && $q_{k-1} \sim N(0,Q_{k-1})$ \\
+		$z_k=H_kx_k+r_k$ && $r_k \sim N(0,R_k)$ \\
+	\end{tabular}		
+\end{center}
+
+Az állapotegyenlet megoldása a predikciós lépésből és a frissítési lépésből áll.
+\begin{equation}
+\begin{split}
+m_k^- &= A_{k-1}m_{k-1} \\
+P_k^- &= A_{k-1}P_{k-1}A_{k-1}^T + Q_{k-1} \\
+\\
+v_k &= z_k-H_k m_k^- \\
+S_k &= H_k P_k^- H_k^T+R_k \\
+K_k &= P_k^- H_k^T S_k^{-1} \\
+m_k &= m_k^- + K_k v_k \\
+P_k &= P_k^- - K_k S_k K_k^T \\
+\end{split}
+\end{equation}
+
+\section{Kiterjesztett Kalman-szűrő}
+A kiterjesztett Kalman-szűrő nemlineáris modell becslését teszi lehetővé:
+\begin{center}
+	\begin{tabular}{lll}
+		$x_k=f(x_{k-1})+q_{k-1}$ && $q_{k-1} \sim N(0,Q_{k-1})$ \\
+		$z_k=h(x_k)+r_k$ && $r_k \sim N(0,R_k)$ \\
+	\end{tabular}		
+\end{center}
+
+A predikciós és frissítési lépés:
+\begin{equation}
+\begin{split}
+m_k^- &= f(m_{k-1}) \\
+P_k^- &= F_x(m_{k-1})P_{k-1}F_x^T(m_{k-1})+Q_{k-1} \\
+\\
+v_k &= z_k-h(m_k^-) \\
+S_k &= H_x(m_k^-) P_k^- H_x^T(m_k^-)+R_k \\
+K_k &= P_k^- H_x^T(m_k^-) S_k^{-1} \\
+m_k &= m_k^- + K_k v_k \\
+P_k &= P_k^- - K_k S_k K_k^T \\
+\end{split}
+\end{equation}

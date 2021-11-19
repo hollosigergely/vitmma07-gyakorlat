@@ -1,0 +1,21 @@
+\newenvironment{execise}{
+	\medskip 
+	\hrule \textwidth \hsize \kern 1mm \hrule \textwidth \hsize
+	\textbf{Példa}\hspace{.5cm}
+}{
+	\vspace{.1cm}
+	\hrule
+	\bigskip
+}
+
+\ifdefined\showanswers
+\newenvironment{answer}{
+	\textbf{Megoldás}\hspace{.5cm}
+}{
+	\vspace{.1cm}
+	\hrule
+	\bigskip
+}
+\else
+\excludecomment{answer}
+\fi
