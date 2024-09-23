@@ -18,10 +18,11 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements OnClickListener
 {
 	public static String[] APS = {
-			"30:AE:A4:97:EC:C9",
-			"24:62:AB:D6:EC:99",
-			"24:62:AB:DC:B2:55",
-			"7C:9E:BD:F4:E1:E9"};
+			"24:62:AB:DC:DC:B5",
+			"08:B6:1F:81:18:31",
+			"D4:D4:DA:5E:2E:FD",
+			"7C:9E:BD:48:47:29"
+	};
 	
 	Button measurementButton = null;
 	Button calibrationButton = null;

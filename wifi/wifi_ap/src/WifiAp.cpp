@@ -4,7 +4,7 @@
 #include <WiFiAP.h>
 
 
-#define AP_SSID	"VITMMA07_3"
+#define AP_SSID	"VITMMA07_2"
 #define AP_PASS "Password"
 
 
@@ -19,8 +19,7 @@ void setup(void){
   	Serial.print("MAC address: ");
 	Serial.println(WiFi.softAPmacAddress());
 	Serial.print("AP IP address: ");
-  	Serial.println(myIP);
-	
+  	Serial.println(myIP.toString());
 }
 
 void loop(void){

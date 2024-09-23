@@ -1,9 +1,11 @@
+%data1 = load_meas('/home/hollosi/tmp/meas','0000');
+%data2 = load_meas('/home/hollosi/tmp/meas','0001');
 
-data1 = load_meas('/home/hollosi//projects/tmit/vitmma07/vitmma07-gyak/uwb/matlab/example.meas','0001');
-data2 = load_meas('/home/hollosi//projects/tmit/vitmma07/vitmma07-gyak/uwb/matlab/example.meas','0002');
+data1 = load_meas('example.meas','0001');
+data2 = load_meas('example.meas','0002');
 
-data1 = data1(:,2:end)
-data2 = data2(:,2:end);
+%data1 = data1(:,2:end)
+%data2 = data2(:,2:end);
 
 figure;
 subplot(2,1,1);
@@ -46,7 +48,7 @@ title('ADS TWR distance of C0DE');
 
 
 
-
+pause;
 
 
 
